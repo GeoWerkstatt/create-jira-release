@@ -22,7 +22,7 @@ runs:
         export LC_ALL=en_US.utf8
         git log $(git describe --abbrev=0 2> /dev/null || git rev-list --max-parents=0 HEAD)..HEAD | \
           grep -oE "${{ inputs.jira-project-key }}-[[:digit:]]{1,}" | sort | uniq | \
-          sed 's/^\|$/"/g' | paste -sd , | awk '{print "RELATED_JIRA_ISSUES="$0}' >> $GITHUB_ENV
+          sed 's/^\|$/"/g' | paste -sd , - | awk '{print "RELATED_JIRA_ISSUES="$0}' >> $GITHUB_ENV
       shell: bash
 
     - name: Create json and invoke webhook
