@@ -17,17 +17,25 @@ runs:
       run: git fetch --prune --unshallow --tags
       shell: bash
 
+    - name: Set last and second to last tags
+      run: |
+        latest_tag=$(git tag -l | sort -V | tail -n 1)
+        previous_tag=$(git tag -l | sort -V | tail -n 2 | head -n 1)
+        echo "Latest tag: $latest_tag"
+        echo "Previous tag: $previous_tag"
+      shell: bash
+
     - name: Collect issue numbers since last release/tag
       run: |
         export LC_ALL=en_US.utf8
-        git log $(git describe --abbrev=0 --tags 2> /dev/null || git rev-list --max-parents=0 HEAD)..HEAD | \
-          grep -oE "${{ inputs.jira-project-key }}-[[:digit:]]{1,}" | sort | uniq | \
-          sed 's/^\|$/"/g' | paste -sd , - | awk '{print "RELATED_JIRA_ISSUES="$0}' >> $GITHUB_ENV
+        git log "$previous_tag..$latest_tag" --oneline | \
+        grep -oE "APIMOV-[[:digit:]]{1,}" | sort -u | \
+        awk '{ printf "RELATED_JIRA_ISSUES=\"%s\"\n", $0 }' >> $GITHUB_ENV
       shell: bash
 
-    - name: Create json and invoke webhook
-      run: |
-        $json = ConvertTo-Json @{issues = @(${{ env.RELATED_JIRA_ISSUES }}); data = @{version = "${{ inputs.build-version }}"; projectName = "${{ inputs.jira-project-key }}"}}
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        Invoke-RestMethod ${{ inputs.jira-automation-webhook }} -Method Post -Body $json -ContentType "application/json"
-      shell: pwsh
+    # - name: Create json and invoke webhook
+    #   run: |
+    #     $json = ConvertTo-Json @{issues = @(${{ env.RELATED_JIRA_ISSUES }}); data = @{version = "${{ inputs.build-version }}"; projectName = "${{ inputs.jira-project-key }}"}}
+    #     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    #     Invoke-RestMethod ${{ inputs.jira-automation-webhook }} -Method Post -Body $json -ContentType "application/json"
+    #   shell: pwsh
