@@ -20,8 +20,8 @@ runs:
     - name: Set last and second to last
       id: search-tags
       run: |
-        latest_tag=$(git tag -l | sort -V | tail -n 1)
-        previous_tag=$(git tag -l | sort -V | tail -n 2 | head -n 1)
+        latest_tag=$(git tag --sort=committerdate | tail -n 1)
+        previous_tag=$(git tag --sort=committerdate | tail -n 2 | head -n 1)
         echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
         echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
       shell: bash
