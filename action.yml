@@ -32,6 +32,7 @@ runs:
         git log ${{ steps.search-tags.outputs.previous_tag }}..${{ steps.search-tags.outputs.latest_tag }} --oneline | \
         grep -oE "${{inputs.jira-project-key}}-[[:digit:]]{1,}" | sort -u | \
         awk '{ printf "RELATED_JIRA_ISSUES=\"%s\"\n", $0 }' >> $GITHUB_ENV
+        echo "issues: ${{ env.RELATED_JIRA_ISSUES }}"
       shell: bash
 
     - name: Create json and invoke webhook
