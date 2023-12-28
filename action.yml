@@ -17,18 +17,19 @@ runs:
       run: git fetch --prune --unshallow --tags
       shell: bash
 
-    - name: Set last and second to last tags
+    - name: Set last and second to last
+      id: search-tags
       run: |
         latest_tag=$(git tag -l | sort -V | tail -n 1)
         previous_tag=$(git tag -l | sort -V | tail -n 2 | head -n 1)
-        echo "Latest tag: $latest_tag"
-        echo "Previous tag: $previous_tag"
+        echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+        echo "previous_tag=$previous_tag" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Collect issue numbers since last release/tag
       run: |
         export LC_ALL=en_US.utf8
-        git log $previous_tag..$latest_tag --oneline | \
+        git log ${{ steps.search-tags.output.previous_tag }}..${{ steps.search-tags.output.latest_tag }} --oneline | \
         grep -oE "${{inputs.jira-project-key}}-[[:digit:]]{1,}" | sort -u | \
         awk '{ printf "RELATED_JIRA_ISSUES=\"%s\"\n", $0 }' >> $GITHUB_ENV
       shell: bash
