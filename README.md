@@ -17,7 +17,7 @@ See [action.yml](action.yml)
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+- uses: actions/checkout@v4
 
 - uses: GeoWerkstatt/create-jira-release@v1
   with:
