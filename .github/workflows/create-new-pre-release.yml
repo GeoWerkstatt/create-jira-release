@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 defaults:
   run:
     shell: bash
