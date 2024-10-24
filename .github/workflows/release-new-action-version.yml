@@ -1,11 +1,12 @@
-name: Release
+name: Release new action version
+
 on:
   release:
     types: [released]
   workflow_dispatch:
     inputs:
       TAG_NAME:
-        description: "Tag name that the major tag will point to"
+        description: 'Tag name that the major tag will point to'
         required: true
 
 env:
@@ -22,6 +23,6 @@ jobs:
     steps:
       - name: Update the ${{ env.TAG_NAME }} tag
         id: update-major-tag
-        uses: actions/publish-action@v0.1.0
+        uses: actions/publish-action@v0.3.0
         with:
           source-tag: ${{ env.TAG_NAME }}
