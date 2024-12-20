@@ -14,7 +14,10 @@ runs:
   using: "composite"
   steps:
     - name: Fetch entire Git history (including tags)
-      run: git fetch --prune --unshallow --tags
+      run: |
+        [ "$(git rev-parse --is-shallow-repository)" = "true" ] && \
+          git fetch --prune --unshallow --tags || \
+          git fetch --prune --tags
       shell: bash
 
     - name: Collect issue numbers since last release/tag
